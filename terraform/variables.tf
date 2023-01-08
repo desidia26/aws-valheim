@@ -1,0 +1,37 @@
+variable "discord_webhook_url" {
+  type        = string
+  default     = ""
+  description = "Webhook URL to send notifications to."
+}
+
+variable "domain" {
+  type        = string
+  default     = ""
+  description = "Main domain for server"
+}
+
+variable "az" {
+  type    = string
+  default = "us-east-1a"
+}
+
+variable "valheim_tag" {
+  type    = string
+  default = "latest"
+}
+
+variable "server_pass" {
+  type    = string
+  default = "262626"
+}
+
+variable "webhook_ssm_name" {
+  type        = string
+  default     = "valheim_webhook_url"
+  description = "name of the ssm param storing the webhook url"
+}
+
+variable "ecr_name" {
+  type = string
+  default = "valheim_server"
+}

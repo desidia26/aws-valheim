@@ -1,6 +1,14 @@
 FROM lloesche/valheim-server:latest
 ARG WORLD_NAME
 
+COPY ./notifyDiscord.sh /bin/notifiyDiscord
 COPY ./config /config
-ENV POST_START_HOOK='curl -sfSL -X POST -H "Content-Type: application/json" -d "{\"username\":\"Valheim-Bot\",\"content\":\"STARTING SERVER\"}" "$DISCORD_WEBHOOK"'
+
+ENV PRE_SERVER_RUN_HOOK='notifiyDiscord "Server starting..."'
+ENV POST_SERVER_LISTENING_HOOK='notifiyDiscord "Server now accepting connections at $URL!"'
+# ENV PRE_BACKUP_HOOK='notifiyDiscord "About to make a backup..."'
+# ENV POST_BACKUP_HOOK='notifiyDiscord "Backup made at @BACKUP_FILE@!"'
+ENV PRE_SERVER_SHUTDOWN_HOOK='notifiyDiscord "Server shutting down..."'
+ENV POST_SERVER_SHUTDOWN_HOOK='notifiyDiscord "Server dead."'
+
 ENV WORLD_NAME=${WORLD_NAME}
