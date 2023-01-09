@@ -12,5 +12,9 @@ services:
     environment:
       - SERVER_PASS=262626
       - STATUS_HTTP=true
+      - WORLD_BUCKET=s3://valheim-state
+      - WORLD_NAME=AWholeNewWorld
     restart: always
+    volumes:
+    - $HOME/.aws/credentials:/root/.aws/credentials:ro
     stop_grace_period: 2m

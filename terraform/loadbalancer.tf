@@ -1,7 +1,7 @@
 resource "aws_lb" "network_load_balancer" {
   name               = "${terraform.workspace}-valheim-lb"
   load_balancer_type = "network"
-  subnets            = [aws_subnet.public[0].id, aws_subnet.public[1].id]
+  subnets            = [aws_subnet.public.id]
 }
 
 resource "aws_lb_target_group" "valheim_target_group" {

@@ -10,7 +10,7 @@ resource "aws_ecs_task_definition" "valheim_task" {
   cpu                      = 2048
   memory                   = 4096
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
   container_definitions = <<DEFINITION
 [
   {
@@ -42,6 +42,14 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "value": "true"
       },
       {
+        "name": "WORLD_BUCKET", 
+        "value": "s3://${var.valheim_bucket}"
+      },
+      {
+        "name": "WORLD_NAME", 
+        "value": "${var.world_name}"
+      },
+      {
         "name": "SERVER_PASS", 
         "value": "${var.server_pass}"
       },
@@ -52,6 +60,12 @@ resource "aws_ecs_task_definition" "valheim_task" {
       {
         "name": "DISCORD_WEBHOOK", 
         "value": "${data.aws_ssm_parameter.discord_webhook.value}"
+      }
+    ],
+    "mountPoints": [
+      {
+        "containerPath": "/config",
+        "sourceVolume": "${var.volume_name}"
       }
     ],
     "logConfiguration": {
@@ -65,6 +79,16 @@ resource "aws_ecs_task_definition" "valheim_task" {
   }
 ]
 DEFINITION
+
+  volume {
+    name      = var.volume_name
+    efs_volume_configuration {
+      file_system_id = aws_efs_file_system.valheim_config.id
+    }
+  }
+  depends_on = [
+    null_resource.push_images
+  ]
 }
 
 resource "aws_ecs_service" "valheim_service" {
@@ -75,7 +99,7 @@ resource "aws_ecs_service" "valheim_service" {
   launch_type     = "FARGATE"
   network_configuration {
     security_groups  = [aws_security_group.task_sg.id]
-    subnets          = [aws_subnet.public[0].id, aws_subnet.public[1].id]
+    subnets          = [aws_subnet.public.id]
     assign_public_ip = true
   }
   load_balancer {
@@ -88,4 +112,7 @@ resource "aws_ecs_service" "valheim_service" {
     container_name   = "valheim"
     container_port   = 80
   }
+  depends_on = [
+    null_resource.push_images
+  ]
 }
