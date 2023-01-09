@@ -10,11 +10,6 @@ variable "domain" {
   description = "Main domain for server"
 }
 
-variable "az" {
-  type    = string
-  default = "us-east-1a"
-}
-
 variable "valheim_tag" {
   type    = string
   default = "latest"
@@ -32,6 +27,6 @@ variable "webhook_ssm_name" {
 }
 
 variable "ecr_name" {
-  type = string
+  type    = string
   default = "valheim_server"
 }

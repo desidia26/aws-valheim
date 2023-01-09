@@ -31,12 +31,16 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "protocol": "udp"
       },
       {
-        "containerPort": 9001,
-        "hostPort": 9001,
-        "protocol": "tcp"
+        "containerPort": 80,
+        "hostPort": 80,
+        "protocol": "http"
       }
     ],
     "environment": [
+      {
+        "name": "STATUS_HTTP", 
+        "value": "true"
+      },
       {
         "name": "SERVER_PASS", 
         "value": "${var.server_pass}"
@@ -71,37 +75,17 @@ resource "aws_ecs_service" "valheim_service" {
   launch_type     = "FARGATE"
   network_configuration {
     security_groups  = [aws_security_group.task_sg.id]
-    subnets          = [aws_subnet.public.id]
+    subnets          = [aws_subnet.public[0].id, aws_subnet.public[1].id]
     assign_public_ip = true
   }
-  service_registries {
-    registry_arn = aws_service_discovery_service.valheim_service_discovery_service.arn
+  load_balancer {
+    target_group_arn = "${aws_lb_target_group.valheim_target_group.arn}" # Referencing our target group
+    container_name   = "valheim"
+    container_port   = 2456
   }
-  depends_on = [
-    aws_service_discovery_service.valheim_service_discovery_service
-  ]
-}
-
-resource "aws_service_discovery_public_dns_namespace" "service_namespace" {
-  name        = var.domain
-  description = "namespace for valheim"
-}
-
-resource "aws_service_discovery_service" "valheim_service_discovery_service" {
-  name = "valheim"
-
-  dns_config {
-    namespace_id = aws_service_discovery_public_dns_namespace.service_namespace.id
-
-    dns_records {
-      ttl  = 10
-      type = "A"
-    }
-
-    routing_policy = "MULTIVALUE"
-  }
-
-  health_check_custom_config {
-    failure_threshold = 5
+  load_balancer {
+    target_group_arn = "${aws_lb_target_group.status_target_group.arn}" # Referencing our target group
+    container_name   = "valheim"
+    container_port   = 80
   }
 }

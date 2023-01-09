@@ -14,9 +14,10 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_subnet" "public" {
+  count                   = 2
   vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 2)
-  availability_zone       = var.az
+  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, 2+count.index)
+  availability_zone       = data.aws_availability_zones.available_zones.names[count.index]
   map_public_ip_on_launch = true
 }
 
@@ -31,8 +32,9 @@ resource "aws_route" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.public.id
-  route_table_id = aws_route_table.public.id
+  count          = 2
+  subnet_id      = element(aws_subnet.public.*.id, count.index)
+  route_table_id = element(aws_route_table.public.*.id, count.index)
 }
 
 resource "aws_security_group" "task_sg" {
@@ -55,10 +57,17 @@ resource "aws_security_group" "task_sg" {
 
   ingress {
     protocol    = "tcp"
-    from_port   = 9001
-    to_port     = 9001
+    from_port   = 80
+    to_port     = 80
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # ingress {
+  #   protocol    = "tcp"
+  #   from_port   = 9001
+  #   to_port     = 9001
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
 
   egress {
     protocol    = "-1"
