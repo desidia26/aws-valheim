@@ -11,7 +11,7 @@ resource "aws_ecs_task_definition" "valheim_task" {
   memory                   = 4096
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
-  container_definitions = <<DEFINITION
+  container_definitions    = <<DEFINITION
 [
   {
     "image": "${data.aws_ecr_repository.valheim_server.repository_url}:${var.valheim_tag}",
@@ -105,7 +105,7 @@ resource "aws_ecs_task_definition" "valheim_task" {
 DEFINITION
 
   volume {
-    name      = var.volume_name
+    name = var.volume_name
     efs_volume_configuration {
       file_system_id = aws_efs_file_system.valheim_config.id
     }
@@ -116,23 +116,25 @@ DEFINITION
 }
 
 resource "aws_ecs_service" "valheim_service" {
-  name            = "${terraform.workspace}-valheim_service"
-  cluster         = aws_ecs_cluster.valheim_server_cluster.id
-  task_definition = aws_ecs_task_definition.valheim_task.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                               = "${terraform.workspace}-valheim_service"
+  cluster                            = aws_ecs_cluster.valheim_server_cluster.id
+  task_definition                    = aws_ecs_task_definition.valheim_task.arn
+  deployment_maximum_percent         = 100
+  deployment_minimum_healthy_percent = 0
+  desired_count                      = 1
+  launch_type                        = "FARGATE"
   network_configuration {
     security_groups  = [aws_security_group.task_sg.id]
     subnets          = [aws_subnet.public.id]
     assign_public_ip = true
   }
   load_balancer {
-    target_group_arn = "${aws_lb_target_group.valheim_target_group.arn}" # Referencing our target group
+    target_group_arn = aws_lb_target_group.valheim_target_group.arn # Referencing our target group
     container_name   = "valheim"
     container_port   = 2456
   }
   load_balancer {
-    target_group_arn = "${aws_lb_target_group.status_target_group.arn}" # Referencing our target group
+    target_group_arn = aws_lb_target_group.status_target_group.arn # Referencing our target group
     container_name   = "valheim"
     container_port   = 80
   }

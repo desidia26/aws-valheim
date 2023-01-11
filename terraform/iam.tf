@@ -39,7 +39,7 @@ EOF
 
 resource "aws_iam_role_policy_attachment" "ecs-task-s3-policy-attachment" {
   role       = aws_iam_role.ecs_task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {

@@ -12,19 +12,19 @@ resource "aws_lb_target_group" "valheim_target_group" {
   vpc_id      = aws_vpc.vpc.id
   health_check {
     protocol = "HTTP"
-    port = 80
-    path ="/status.json"
-    matcher =  "200-299"
+    port     = 80
+    path     = "/status.json"
+    matcher  = "200-299"
   }
 }
 
 resource "aws_lb_listener" "listener" {
-  load_balancer_arn = "${aws_lb.network_load_balancer.arn}"
+  load_balancer_arn = aws_lb.network_load_balancer.arn
   port              = "2456"
   protocol          = "UDP"
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.valheim_target_group.arn}" 
+    target_group_arn = aws_lb_target_group.valheim_target_group.arn
   }
 }
 
@@ -36,19 +36,19 @@ resource "aws_lb_target_group" "status_target_group" {
   vpc_id      = aws_vpc.vpc.id
   health_check {
     protocol = "HTTP"
-    port = 80
-    path ="/status.json"
-    matcher =  "200-299"
+    port     = 80
+    path     = "/status.json"
+    matcher  = "200-299"
   }
 }
 
 resource "aws_lb_listener" "status_listener" {
-  load_balancer_arn = "${aws_lb.network_load_balancer.arn}"
+  load_balancer_arn = aws_lb.network_load_balancer.arn
   port              = "80"
   protocol          = "TCP"
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.status_target_group.arn}" 
+    target_group_arn = aws_lb_target_group.status_target_group.arn
   }
 }
 

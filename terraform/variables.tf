@@ -32,16 +32,16 @@ variable "ecr_name" {
 }
 
 variable "volume_name" {
-  type = string
+  type    = string
   default = "valheim-config-volume"
 }
 
 variable "valheim_bucket" {
-  type = string
+  type    = string
   default = "valheim-state"
 }
 
 variable "world_name" {
-  type = string
+  type    = string
   default = "AWholeNewWorld"
 }
