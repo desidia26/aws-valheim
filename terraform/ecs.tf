@@ -58,6 +58,30 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "value": "${var.domain}:2456"
       },
       {
+        "name": "PRE_BOOTSTRAP_HOOK", 
+        "value": "worldInit $WORLD_BUCKET $WORLD_NAME"
+      },
+      {
+        "name": "PRE_SERVER_RUN_HOOK", 
+        "value": "notifiyDiscord \"Server starting...\""
+      },
+      {
+        "name": "POST_SERVER_LISTENING_HOOK", 
+        "value": "notifiyDiscord \"Server now accepting connections at $URL!\""
+      },
+      {
+        "name": "POST_BACKUP_HOOK", 
+        "value": "uploadBackupToS3 @BACKUP_FILE@ $WORLD_BUCKET"
+      },
+      {
+        "name": "PRE_SERVER_SHUTDOWN_HOOK", 
+        "value": "notifiyDiscord \"Server shutting down...\""
+      },
+      {
+        "name": "POST_SERVER_SHUTDOWN_HOOK", 
+        "value": "notifiyDiscord \"R.I.P Server.\""
+      },
+      {
         "name": "DISCORD_WEBHOOK", 
         "value": "${data.aws_ssm_parameter.discord_webhook.value}"
       }
