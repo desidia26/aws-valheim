@@ -3,10 +3,10 @@ locals {
 }
 
 module "discord_lambda" {
-  source = "../shared/go-lambda"
-  go_dir = "${path.module}/go"
+  source      = "../shared/go-lambda"
+  go_dir      = "${path.module}/go"
   script_name = local.script_name
-  role_arn = var.role_arn
+  role_arn    = var.role_arn
   lambda_env = {
     DISCORD_KEY  = "${var.discord_public_key}"
     SERVICE_ARN  = "${var.ecs_service_arn}"

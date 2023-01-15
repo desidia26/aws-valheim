@@ -8,13 +8,13 @@ module "bot_lambda" {
 }
 
 module "nightly_lambda" {
-  source = "./nightly-lambda"
-  ecs_service_arn    = aws_ecs_service.valheim_service.id
-  ecs_cluster_name   = aws_ecs_cluster.valheim_server_cluster.id
-  aws_region         = data.aws_region.current.name
-  domain             = var.domain
-  role_arn           = aws_iam_role.iam_for_lambda.arn
-  webhook            = data.aws_ssm_parameter.discord_webhook.value
+  source           = "./nightly-lambda"
+  ecs_service_arn  = aws_ecs_service.valheim_service.id
+  ecs_cluster_name = aws_ecs_cluster.valheim_server_cluster.id
+  aws_region       = data.aws_region.current.name
+  domain           = var.domain
+  role_arn         = aws_iam_role.iam_for_lambda.arn
+  webhook          = data.aws_ssm_parameter.discord_webhook.value
 }
 
 
