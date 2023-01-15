@@ -70,7 +70,7 @@ func playersAreConnected() bool {
 			fmt.Println("Error:", err)
 			return true
 	}
-	return len(serverStatus.Players) == 0
+	return len(serverStatus.Players) != 0
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
