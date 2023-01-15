@@ -1,5 +1,6 @@
 *.tfvars
 *.terraform*
+valheim-nightly-lambda*
 valheim-discord-lambda*
 *.tfstate*
 discordConfig.json

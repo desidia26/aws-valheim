@@ -38,24 +38,20 @@ resource "aws_ecs_task_definition" "valheim_task" {
     ],
     "environment": [
       {
-        "name": "STATUS_HTTP", 
-        "value": "true"
+        "name": "DISCORD_WEBHOOK", 
+        "value": "${data.aws_ssm_parameter.discord_webhook.value}"
       },
       {
-        "name": "WORLD_BUCKET", 
-        "value": "s3://${var.valheim_bucket}"
+        "name": "POST_BACKUP_HOOK", 
+        "value": "uploadBackupToS3 @BACKUP_FILE@ $WORLD_BUCKET"
       },
       {
-        "name": "WORLD_NAME", 
-        "value": "${var.world_name}"
+        "name": "POST_SERVER_LISTENING_HOOK", 
+        "value": "notifiyDiscord \"Server now accepting connections at $URL!\""
       },
       {
-        "name": "SERVER_PASS", 
-        "value": "${var.server_pass}"
-      },
-      {
-        "name": "URL", 
-        "value": "${var.domain}:2456"
+        "name": "POST_SERVER_SHUTDOWN_HOOK", 
+        "value": "notifiyDiscord \"R.I.P Server.\""
       },
       {
         "name": "PRE_BOOTSTRAP_HOOK", 
@@ -66,24 +62,28 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "value": "notifiyDiscord \"Server starting...\""
       },
       {
-        "name": "POST_SERVER_LISTENING_HOOK", 
-        "value": "notifiyDiscord \"Server now accepting connections at $URL!\""
-      },
-      {
-        "name": "POST_BACKUP_HOOK", 
-        "value": "uploadBackupToS3 @BACKUP_FILE@ $WORLD_BUCKET"
-      },
-      {
         "name": "PRE_SERVER_SHUTDOWN_HOOK", 
         "value": "notifiyDiscord \"Server shutting down...\""
       },
       {
-        "name": "POST_SERVER_SHUTDOWN_HOOK", 
-        "value": "notifiyDiscord \"R.I.P Server.\""
+        "name": "SERVER_PASS", 
+        "value": "${var.server_pass}"
       },
       {
-        "name": "DISCORD_WEBHOOK", 
-        "value": "${data.aws_ssm_parameter.discord_webhook.value}"
+        "name": "STATUS_HTTP", 
+        "value": "true"
+      },
+      {
+        "name": "URL", 
+        "value": "${var.domain}:2456"
+      },
+      {
+        "name": "WORLD_BUCKET", 
+        "value": "s3://${var.valheim_bucket}"
+      },
+      {
+        "name": "WORLD_NAME", 
+        "value": "${var.world_name}"
       }
     ],
     "mountPoints": [
@@ -121,7 +121,7 @@ resource "aws_ecs_service" "valheim_service" {
   task_definition                    = aws_ecs_task_definition.valheim_task.arn
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
-  desired_count                      = 1
+  desired_count                      = 0
   launch_type                        = "FARGATE"
   network_configuration {
     security_groups  = [aws_security_group.task_sg.id]

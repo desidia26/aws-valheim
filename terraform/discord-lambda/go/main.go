@@ -14,7 +14,6 @@ import (
 )
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-
 	var cmd helpers.DiscordCommand
 	err := json.Unmarshal([]byte(request.Body), &cmd)
 	if err != nil {
