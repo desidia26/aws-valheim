@@ -44,7 +44,7 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return helpers.GetDiscordCommandResponse(err.Error(), http.StatusOK), nil
 	}
 	switch cmd.Data.Name {
-		case "startvalheimserver":
+		case "valheimserverstart":
 			if(desiredCount == int64(0)) {
 				err := aws.UpdateEcsServiceCount(ecsDetails, 1)
 				if (err != nil) {

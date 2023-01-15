@@ -4,3 +4,4 @@ valheim-discord-lambda*
 *.tfstate*
 discordConfig.json
 discord-bot-register
+node_modules

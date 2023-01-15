@@ -1,6 +1,6 @@
 [
   {
-    "name": "startvalheimserver",
+    "name": "valheimserverstart",
     "type": 1,
     "description": "Starts the valheim server ;/"
   },
