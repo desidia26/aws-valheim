@@ -1,6 +1,6 @@
 resource "null_resource" "push_images" {
   triggers = {
-    timestamp = timestamp()
+    timestamp = var.build_image ? timestamp() : "foo"
   }
 
   provisioner "local-exec" {

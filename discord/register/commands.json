@@ -1,0 +1,12 @@
+[
+  {
+    "name": "startvalheimserver",
+    "type": 1,
+    "description": "Starts the valheim server ;/"
+  },
+  {
+    "name": "valheimserverstatus",
+    "type": 1,
+    "description": "Gets the valheim server status ;/"
+  }
+]

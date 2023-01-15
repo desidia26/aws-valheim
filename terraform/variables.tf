@@ -45,3 +45,11 @@ variable "world_name" {
   type    = string
   default = "AWholeNewWorld"
 }
+
+variable "discord_public_key" {
+  type = string
+}
+
+variable "build_image" {
+  type = bool
+}

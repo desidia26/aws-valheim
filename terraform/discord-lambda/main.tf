@@ -43,13 +43,21 @@ EOF
 
 resource "aws_lambda_function" "valheim_discord" {
   function_name    = "valheim_discord"
-  filename         = "${local.script_name}.zip"
+  filename         = "${path.module}/${local.script_name}.zip"
   handler          = "${local.script_name}"
   source_code_hash = "${data.archive_file.zip.output_base64sha256}"
   role             = "${aws_iam_role.iam_for_lambda.arn}"
   runtime          = "go1.x"
   memory_size      = 128
   timeout          = 10
+  environment {
+    variables = {
+      DISCORD_KEY = "${var.discord_public_key}"
+      SERVICE_ARN = "${var.ecs_service_arn}"
+      CLUSTER_NAME = "${var.ecs_cluster_name}"
+      REGION = "${var.aws_region}"
+    }
+  }
 }
 
 resource "aws_api_gateway_rest_api" "valheim_discord_api" {
@@ -92,4 +100,43 @@ resource "aws_api_gateway_deployment" "valheim_gateway_deployment" {
 
 output "url" {
   value = "${aws_api_gateway_deployment.valheim_gateway_deployment.invoke_url}"
+}
+
+
+resource "aws_cloudwatch_log_group" "function_log_group" {
+  name              = "/aws/lambda/${aws_lambda_function.valheim_discord.function_name}"
+  retention_in_days = 7
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_iam_policy" "function_policy" {
+  name   = "function-policy"
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        Action : [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Effect : "Allow",
+        Resource : "arn:aws:logs:*:*:*"
+      },
+      {
+        Action : [
+          "ecs:UpdateService",
+          "ecs:DescribeServices"
+        ],
+        Effect : "Allow",
+        Resource : "${var.ecs_service_arn}"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "function_policy_attachment" {
+  role = aws_iam_role.iam_for_lambda.id
+  policy_arn = aws_iam_policy.function_policy.arn
 }
