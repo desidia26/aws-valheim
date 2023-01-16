@@ -54,7 +54,7 @@ func playersAreConnected() bool {
 	resp, err := http.Get(url)
 	if err != nil {
 			fmt.Println("Error:", err)
-			return true
+			return false
 	}
 	defer resp.Body.Close()
 
@@ -79,6 +79,13 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		Region: os.Getenv("REGION"),
 		Service: os.Getenv("SERVICE_ARN"),
 		Cluster: os.Getenv("CLUSTER_NAME"),
+	}
+	desiredTasks, _ := aws.GetDesiredCount(ecsDetails);
+	if(desiredTasks == int64(0)) {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusOK,
+			Body: "Already scaled down",
+		}, nil
 	}
 	if(!playersAreConnected()) {
 		aws.UpdateEcsServiceCount(ecsDetails, 0);
