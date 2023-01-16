@@ -38,6 +38,10 @@ resource "aws_ecs_task_definition" "valheim_task" {
     ],
     "environment": [
       {
+        "name": "BACKUPS_CRON", 
+        "value": "0 5 * * *"
+      },
+      {
         "name": "DISCORD_WEBHOOK", 
         "value": "${data.aws_ssm_parameter.discord_webhook.value}"
       },
@@ -62,8 +66,16 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "value": "notifiyDiscord \"Server starting...\""
       },
       {
+        "name": "PRE_RESTART_HOOK", 
+        "value": "notifiyDiscord \"Restarting to apply update!\""
+      },
+      {
         "name": "PRE_SERVER_SHUTDOWN_HOOK", 
         "value": "notifiyDiscord \"Server shutting down...\""
+      },
+      {
+        "name": "RESTART_CRON", 
+        "value": "0 10 * * *"
       },
       {
         "name": "SERVER_PASS", 
