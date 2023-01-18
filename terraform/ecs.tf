@@ -46,6 +46,10 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "value": "${data.aws_ssm_parameter.discord_webhook.value}"
       },
       {
+        "name": "IP_LAMBDA_FUNCTION_NAME", 
+        "value": "${module.ip_lambda.function_name}"
+      },
+      {
         "name": "POST_BACKUP_HOOK", 
         "value": "uploadBackupToS3 @BACKUP_FILE@ $WORLD_BUCKET"
       },
@@ -59,7 +63,7 @@ resource "aws_ecs_task_definition" "valheim_task" {
       },
       {
         "name": "PRE_BOOTSTRAP_HOOK", 
-        "value": "worldInit $WORLD_BUCKET $WORLD_NAME"
+        "value": "worldInit $WORLD_BUCKET $WORLD_NAME && updateR53 $IP_LAMBDA_FUNCTION_NAME"
       },
       {
         "name": "PRE_SERVER_RUN_HOOK", 

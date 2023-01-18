@@ -1,20 +1,35 @@
 module "bot_lambda" {
   source             = "./discord-lambda"
-  discord_public_key = var.discord_public_key
-  ecs_service_arn    = aws_ecs_service.valheim_service.id
-  ecs_cluster_name   = aws_ecs_cluster.valheim_server_cluster.id
-  aws_region         = data.aws_region.current.name
   role_arn           = aws_iam_role.iam_for_lambda.arn
+  env = {
+    DISCORD_KEY  = "${var.discord_public_key}"
+    SERVICE_ARN  = "${aws_ecs_service.valheim_service.id}"
+    CLUSTER_NAME = "${aws_ecs_cluster.valheim_server_cluster.id}"
+    REGION       = "${data.aws_region.current.name}"
+  }
 }
 
 module "nightly_lambda" {
   source           = "./nightly-lambda"
-  ecs_service_arn  = aws_ecs_service.valheim_service.id
-  ecs_cluster_name = aws_ecs_cluster.valheim_server_cluster.id
-  aws_region       = data.aws_region.current.name
-  domain           = var.domain
   role_arn         = aws_iam_role.iam_for_lambda.arn
-  webhook          = data.aws_ssm_parameter.discord_webhook.value
+  env = {
+    WEBHOOK      = "${data.aws_ssm_parameter.discord_webhook.value}"
+    DOMAIN       = "${var.domain}"
+    SERVICE_ARN  = "${aws_ecs_service.valheim_service.id}"
+    CLUSTER_NAME = "${aws_ecs_cluster.valheim_server_cluster.id}"
+    REGION       = "${data.aws_region.current.name}"
+  }
+}
+
+module "ip_lambda" {
+  source           = "./update-r53-lambda"
+  role_arn         = aws_iam_role.iam_for_lambda.arn
+  env = {
+    DOMAIN       = "${var.domain}"
+    CLUSTER_NAME = "${aws_ecs_cluster.valheim_server_cluster.id}"
+    REGION       = "${data.aws_region.current.name}"
+    ZONE_ID      = "${data.aws_route53_zone.valheim_domain.zone_id}"
+  }
 }
 
 
@@ -54,11 +69,33 @@ resource "aws_iam_policy" "function_policy" {
       {
         Action : [
           "ecs:UpdateService",
-          "ecs:DescribeServices"
+          "ecs:DescribeServices",
+          "ecs:ListTasks",
+          "ecs:DescribeTasks",
+          "route53:ChangeResourceRecordSets"
         ],
         Effect : "Allow",
-        Resource : "${aws_ecs_service.valheim_service.id}"
-      }
+        Resource : [
+          "${aws_ecs_service.valheim_service.id}",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:container-instance/*/*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:task/*/*",
+          "${data.aws_route53_zone.valheim_domain.arn}"
+        ]
+      },
+      {
+        Action : [
+          "ec2:DescribeNetworkInterfaces"
+        ],
+        Effect : "Allow",
+        Resource: "*"
+      },
+      {
+        Action : [
+          "ecs:ListTasks"
+        ],
+        Effect : "Allow",
+        Resource: "*"
+      },
     ]
   })
 }

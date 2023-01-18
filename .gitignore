@@ -2,6 +2,7 @@
 *.terraform*
 valheim-nightly-lambda*
 valheim-discord-lambda*
+valheim-update-r53-lambda*
 *.tfstate*
 discordConfig.json
 discord-bot-register

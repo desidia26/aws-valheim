@@ -7,13 +7,7 @@ module "discord_lambda" {
   go_dir      = "${path.module}/go"
   script_name = local.script_name
   role_arn    = var.role_arn
-  lambda_env = {
-    WEBHOOK      = "${var.webhook}"
-    DOMAIN       = "${var.domain}"
-    SERVICE_ARN  = "${var.ecs_service_arn}"
-    CLUSTER_NAME = "${var.ecs_cluster_name}"
-    REGION       = "${var.aws_region}"
-  }
+  lambda_env  = var.env
 }
 
 // Allow CloudWatch to invoke our function

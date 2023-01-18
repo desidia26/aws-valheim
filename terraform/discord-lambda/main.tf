@@ -7,12 +7,7 @@ module "discord_lambda" {
   go_dir      = "${path.module}/go"
   script_name = local.script_name
   role_arn    = var.role_arn
-  lambda_env = {
-    DISCORD_KEY  = "${var.discord_public_key}"
-    SERVICE_ARN  = "${var.ecs_service_arn}"
-    CLUSTER_NAME = "${var.ecs_cluster_name}"
-    REGION       = "${var.aws_region}"
-  }
+  lambda_env  = var.env 
 }
 
 resource "aws_api_gateway_rest_api" "valheim_discord_api" {
