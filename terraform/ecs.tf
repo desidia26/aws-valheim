@@ -38,6 +38,10 @@ resource "aws_ecs_task_definition" "valheim_task" {
     ],
     "environment": [
       {
+        "name": "BACKUPS_CRON", 
+        "value": "0 5 * * *"
+      },
+      {
         "name": "DISCORD_WEBHOOK", 
         "value": "${data.aws_ssm_parameter.discord_webhook.value}"
       },
@@ -62,8 +66,16 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "value": "notifiyDiscord \"Server starting...\""
       },
       {
+        "name": "PRE_RESTART_HOOK", 
+        "value": "notifiyDiscord \"Restarting to apply update!\""
+      },
+      {
         "name": "PRE_SERVER_SHUTDOWN_HOOK", 
         "value": "notifiyDiscord \"Server shutting down...\""
+      },
+      {
+        "name": "RESTART_CRON", 
+        "value": "0 10 * * *"
       },
       {
         "name": "SERVER_PASS", 
@@ -127,16 +139,6 @@ resource "aws_ecs_service" "valheim_service" {
     security_groups  = [aws_security_group.task_sg.id]
     subnets          = [aws_subnet.public.id]
     assign_public_ip = true
-  }
-  load_balancer {
-    target_group_arn = aws_lb_target_group.valheim_target_group.arn # Referencing our target group
-    container_name   = "valheim"
-    container_port   = 2456
-  }
-  load_balancer {
-    target_group_arn = aws_lb_target_group.status_target_group.arn # Referencing our target group
-    container_name   = "valheim"
-    container_port   = 80
   }
   depends_on = [
     null_resource.push_images

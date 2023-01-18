@@ -15,9 +15,20 @@ module "discord_lambda" {
     REGION       = "${var.aws_region}"
   }
 }
+
+// Allow CloudWatch to invoke our function
+resource "aws_lambda_permission" "allow_cloudwatch_to_invoke" {
+  function_name = module.discord_lambda.function_name
+  statement_id = "CloudWatchInvoke"
+  action = "lambda:InvokeFunction"
+
+  source_arn = aws_cloudwatch_event_rule.nightly_rule.arn
+  principal = "events.amazonaws.com"
+}
+
 resource "aws_cloudwatch_event_rule" "nightly_rule" {
   name                = "nightly_rule"
-  schedule_expression = "cron(0 2 * * ? *)"
+  schedule_expression = "cron(0 7 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "nightly_task" {
