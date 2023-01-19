@@ -15,6 +15,7 @@ module "nightly_lambda" {
   env = {
     WEBHOOK      = "${data.aws_ssm_parameter.discord_webhook.value}"
     DOMAIN       = "${var.domain}"
+    ZONE_ID      = "${data.aws_route53_zone.valheim_domain.zone_id}"
     SERVICE_ARN  = "${aws_ecs_service.valheim_service.id}"
     CLUSTER_NAME = "${aws_ecs_cluster.valheim_server_cluster.id}"
     REGION       = "${data.aws_region.current.name}"
