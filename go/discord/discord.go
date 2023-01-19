@@ -1,10 +1,12 @@
-package helpers
+package discord
 
 import (
+	"bytes"
 	"crypto/ed25519"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -13,13 +15,6 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/bwmarrin/discordgo"
 )
-
-type DiscordCommandResponse struct {
-	Type int `json:"type"`
-	Data struct {
-		Content string `json:"content"`
-	} `json:"data"`
-}
 
 func GetDiscordCommandResponse (response string, code int) events.APIGatewayProxyResponse {
 	discordResponse := DiscordCommandResponse{
@@ -55,4 +50,41 @@ func GetDiscordPingResponse (req events.APIGatewayProxyRequest) events.APIGatewa
 			Body: "invalid request signature",
 		} 
 	}
+}
+
+func GripeAtDiscord(text string) {
+	message := DiscordMessage{Username: "Valheim-Bot", Content: text}
+	messageJSON, _ := json.Marshal(message)
+
+	resp, err := http.Post(os.Getenv("WEBHOOK"), "application/json", bytes.NewBuffer(messageJSON))
+	if (err != nil) {
+		defer resp.Body.Close()
+		fmt.Println(resp.Status)
+	} else {
+		fmt.Println(err.Error())
+	}
+}
+
+func PlayersAreConnected() bool {
+	url := "http://"+os.Getenv("DOMAIN")+"/status.json"
+	resp, err := http.Get(url)
+	if err != nil {
+			fmt.Println("Error:", err)
+			return false
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+			fmt.Println("Error:", err)
+			return true
+	}
+
+	var serverStatus ServerStatus
+	err = json.Unmarshal(body, &serverStatus)
+	if err != nil {
+			fmt.Println("Error:", err)
+			return true
+	}
+	return len(serverStatus.Players) != 0
 }
