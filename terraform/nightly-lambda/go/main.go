@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -22,6 +23,10 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	}
 	if(!discord.PlayersAreConnected()) {
 		awslib.UpdateEcsServiceCount(ecsDetails, 0, sess);
+		domain := os.Getenv("DOMAIN")
+		zoneId := os.Getenv("ZONE_ID")
+		ip := "0.0.0.0"
+		awslib.UpdateARecord(&ip, &domain, &zoneId, sess)
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusOK,
 			Body: "Scaled down",
