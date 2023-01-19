@@ -8,7 +8,7 @@ require (
 )
 
 require (
-	github.com/bwmarrin/discordgo v0.26.1 // indirect
+	github.com/bwmarrin/discordgo v0.27.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 )
 
