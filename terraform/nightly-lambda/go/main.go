@@ -21,7 +21,14 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			Body: "Already scaled down",
 		}, nil
 	}
-	if(!discord.PlayersAreConnected()) {
+	playerCount, err := discord.GetPlayerCount();
+	if(err != nil) {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusInternalServerError,
+			Body: err.Error(),
+		}, nil
+	}
+	if(playerCount == 0) {
 		awslib.UpdateEcsServiceCount(ecsDetails, 0, sess);
 		domain := os.Getenv("DOMAIN")
 		zoneId := os.Getenv("ZONE_ID")

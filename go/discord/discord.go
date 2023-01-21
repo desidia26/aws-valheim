@@ -65,26 +65,26 @@ func GripeAtDiscord(text string) {
 	}
 }
 
-func PlayersAreConnected() bool {
+func GetPlayerCount() (int, error) {
 	url := "http://"+os.Getenv("DOMAIN")+"/status.json"
 	resp, err := http.Get(url)
 	if err != nil {
 			fmt.Println("Error:", err)
-			return false
+			return 0, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 			fmt.Println("Error:", err)
-			return true
+			return 0, err
 	}
 
 	var serverStatus ServerStatus
 	err = json.Unmarshal(body, &serverStatus)
 	if err != nil {
 			fmt.Println("Error:", err)
-			return true
+			return 0, err
 	}
-	return len(serverStatus.Players) != 0
+	return serverStatus.PlayerCount, nil
 }

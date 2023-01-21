@@ -51,8 +51,9 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				return discord.GetDiscordCommandResponse("Server already running!", http.StatusOK), nil
 			}
 		case "valheimserverstatus":
+			playerCount, _ := discord.GetPlayerCount();
 			return discord.GetDiscordCommandResponse(
-				fmt.Sprintf("Desired count: %d\nRunning count: %d", desiredCount, runningCount), http.StatusOK), nil
+				fmt.Sprintf("Desired count: %d\nRunning count: %d\nPlayer count: %d", desiredCount, runningCount, playerCount), http.StatusOK), nil
 		default:
 			return discord.GetDiscordCommandResponse(
 				fmt.Sprintf("Command %s not recognized!", cmd.Data.Name), http.StatusBadRequest,
