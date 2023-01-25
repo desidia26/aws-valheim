@@ -7,7 +7,7 @@ resource "aws_ecs_task_definition" "valheim_task" {
   family                   = "${terraform.workspace}-valheim"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 2048
+  cpu                      = 1024
   memory                   = 4096
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
@@ -15,7 +15,7 @@ resource "aws_ecs_task_definition" "valheim_task" {
 [
   {
     "image": "${data.aws_ecr_repository.valheim_server.repository_url}:${var.valheim_tag}",
-    "cpu": 2048,
+    "cpu": 1024,
     "memory": 4096,
     "name": "valheim",
     "networkMode": "awsvpc",
@@ -63,7 +63,7 @@ resource "aws_ecs_task_definition" "valheim_task" {
       },
       {
         "name": "PRE_BOOTSTRAP_HOOK", 
-        "value": "worldInit $WORLD_BUCKET $WORLD_NAME && updateR53 $IP_LAMBDA_FUNCTION_NAME"
+        "value": "printenv && worldInit $WORLD_BUCKET $WORLD_NAME && updateR53 $IP_LAMBDA_FUNCTION_NAME && downloadMods"
       },
       {
         "name": "PRE_SERVER_RUN_HOOK", 
@@ -92,6 +92,26 @@ resource "aws_ecs_task_definition" "valheim_task" {
       {
         "name": "URL", 
         "value": "${var.domain}:2456"
+      },
+      {
+        "name": "VALHEIM_PLUS",
+        "value": "true"
+      },
+      { 
+        "name": "VPCFG_Server_enabled",
+        "value": "true"
+      },
+      { 
+        "name": "VPCFG_Server_enforceMod",
+        "value": "true"
+      },
+      { 
+        "name": "VPCFG_Server_serverSyncsConfig",
+        "value": "true"
+      },
+      { 
+        "name": "VPCFG_AdvancedBuildingMode_enabled",
+        "value": "true"
       },
       {
         "name": "WORLD_BUCKET", 
@@ -137,7 +157,7 @@ resource "aws_ecs_service" "valheim_service" {
   task_definition                    = aws_ecs_task_definition.valheim_task.arn
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
-  desired_count                      = 0
+  desired_count                      = 1
   launch_type                        = "FARGATE"
   network_configuration {
     security_groups  = [aws_security_group.task_sg.id]

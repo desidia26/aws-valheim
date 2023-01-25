@@ -2,6 +2,7 @@ module "bot_lambda" {
   source             = "./discord-lambda"
   role_arn           = aws_iam_role.iam_for_lambda.arn
   env = {
+    DOMAIN       = "${var.domain}"
     DISCORD_KEY  = "${var.discord_public_key}"
     SERVICE_ARN  = "${aws_ecs_service.valheim_service.id}"
     CLUSTER_NAME = "${aws_ecs_cluster.valheim_server_cluster.id}"

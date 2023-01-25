@@ -12,7 +12,7 @@ variable "domain" {
 
 variable "valheim_tag" {
   type    = string
-  default = "latest"
+  default = "1.0.1"
 }
 
 variable "server_pass" {

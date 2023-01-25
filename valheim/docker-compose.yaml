@@ -2,7 +2,7 @@ version: "3"
 
 services: 
   valheim: 
-    image: desidia26/valheim
+    image: 180662663850.dkr.ecr.us-east-1.amazonaws.com/valheim_server:latest
     cap_add:
       - sys_nice
     ports: 
@@ -10,10 +10,15 @@ services:
       - "9001:9001/tcp"
       - "3000:80"
     environment:
-      - SERVER_PASS=262626
-      - STATUS_HTTP=true
-      - WORLD_BUCKET=s3://valheim-state
-      - WORLD_NAME=AWholeNewWorld
+      SERVER_PASS: 262626
+      STATUS_HTTP: true
+      WORLD_BUCKET: s3://valheim-state
+      WORLD_NAME: AWholeNewWorld
+      VALHEIM_PLUS: true
+      'VPCFG_Server_enabled': true
+      'VPCFG_Server_enforceMod': true
+      'VPCFG_Server_serverSyncsConfig': true
+      'VPCFG_AdvancedBuildingMode_enabled': true
     restart: always
     volumes:
     - $HOME/.aws/credentials:/root/.aws/credentials:ro
