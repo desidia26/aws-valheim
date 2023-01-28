@@ -114,6 +114,58 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "value": "true"
       },
       {
+        "name": "VPCFG_FireSource_enabled",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_FireSource_torches",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Kiln_enabled",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Kiln_dontProcessFineWood",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Map_enabled",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Map_displayCartsAndBoats",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Player_enabled",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Player_autoRepair",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Workbench_enabled",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Workbench_disableRoofCheck",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Workbench_workbenchRange",
+        "value": "40"
+      },
+      {
+        "name": "VPCFG_Inventory_enabled",
+        "value": "true"
+      },
+      {
+        "name": "VPCFG_Inventory_woodChestRows",
+        "value": "4"
+      },
+      {
         "name": "WORLD_BUCKET", 
         "value": "s3://${var.valheim_bucket}"
       },
