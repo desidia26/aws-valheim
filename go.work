@@ -1,0 +1,8 @@
+go 1.19
+
+use (
+	./go
+	./terraform/discord-lambda/go
+	./terraform/nightly-lambda/go
+	./terraform/update-r53-lambda/go
+)

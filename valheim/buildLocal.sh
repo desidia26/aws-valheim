@@ -1,13 +1,6 @@
 #!/bin/bash
 set -e
 
-clean_up () {
-    ARG=$?
-    rm -rf ./config
-    exit $ARG
-} 
-trap clean_up EXIT
-
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 

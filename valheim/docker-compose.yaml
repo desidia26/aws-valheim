@@ -2,7 +2,7 @@ version: "3"
 
 services: 
   valheim: 
-    image: 180662663850.dkr.ecr.us-east-1.amazonaws.com/valheim_server:latest
+    image: desidia26/valheim:latest
     cap_add:
       - sys_nice
     ports: 
@@ -14,24 +14,8 @@ services:
       STATUS_HTTP: true
       WORLD_BUCKET: s3://valheim-state
       WORLD_NAME: AWholeNewWorld
-      VALHEIM_PLUS: true
-      'VPCFG_Server_enabled': true
-      'VPCFG_Server_enforceMod': true
-      'VPCFG_Server_serverSyncsConfig': true
-      'VPCFG_AdvancedBuildingMode_enabled': true
-      'VPCFG_FireSource_enabled': true
-      'VPCFG_FireSource_torches': true
-      'VPCFG_Kiln_enabled': true
-      'VPCFG_Kiln_dontProcessFineWood': true
-      'VPCFG_Map_enabled': true
-      'VPCFG_Map_displayCartsAndBoats': true
-      'VPCFG_Player_enabled': true
-      'VPCFG_Player_autoRepair': true
-      'VPCFG_Workbench_enabled': true
-      'VPCFG_Workbench_disableRoofCheck': true
-      'VPCFG_Workbench_workbenchRange': 40 # default: 20
-      'VPCFG_Inventory_enabled': true
-      'VPCFG_Inventory_woodChestRows': 4 # default: 2
+      BEPINEX: true
+      PRE_SERVER_RUN_HOOK: downloadMods
     restart: always
     volumes:
     - $HOME/.aws/credentials:/root/.aws/credentials:ro

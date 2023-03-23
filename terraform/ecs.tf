@@ -7,8 +7,8 @@ resource "aws_ecs_task_definition" "valheim_task" {
   family                   = "${terraform.workspace}-valheim"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 1024
-  memory                   = 4096
+  cpu                      = 2048
+  memory                   = 8192
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
   container_definitions    = <<DEFINITION
@@ -63,11 +63,11 @@ resource "aws_ecs_task_definition" "valheim_task" {
       },
       {
         "name": "PRE_BOOTSTRAP_HOOK", 
-        "value": "printenv && worldInit $WORLD_BUCKET $WORLD_NAME && updateR53 $IP_LAMBDA_FUNCTION_NAME && downloadMods"
+        "value": "printenv && worldInit $WORLD_BUCKET $WORLD_NAME && updateR53 $IP_LAMBDA_FUNCTION_NAME"
       },
       {
         "name": "PRE_SERVER_RUN_HOOK", 
-        "value": "notifiyDiscord \"Server starting...\""
+        "value": "downloadMods && notifiyDiscord \"Server starting...\""
       },
       {
         "name": "PRE_RESTART_HOOK", 
@@ -82,6 +82,10 @@ resource "aws_ecs_task_definition" "valheim_task" {
         "value": "0 10 * * *"
       },
       {
+        "name": "BEPINEX", 
+        "value": "true"
+      },
+      {
         "name": "SERVER_PASS", 
         "value": "${var.server_pass}"
       },
@@ -92,78 +96,6 @@ resource "aws_ecs_task_definition" "valheim_task" {
       {
         "name": "URL", 
         "value": "${var.domain}:2456"
-      },
-      {
-        "name": "VALHEIM_PLUS",
-        "value": "true"
-      },
-      { 
-        "name": "VPCFG_Server_enabled",
-        "value": "true"
-      },
-      { 
-        "name": "VPCFG_Server_enforceMod",
-        "value": "true"
-      },
-      { 
-        "name": "VPCFG_Server_serverSyncsConfig",
-        "value": "true"
-      },
-      { 
-        "name": "VPCFG_AdvancedBuildingMode_enabled",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_FireSource_enabled",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_FireSource_torches",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Kiln_enabled",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Kiln_dontProcessFineWood",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Map_enabled",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Map_displayCartsAndBoats",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Player_enabled",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Player_autoRepair",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Workbench_enabled",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Workbench_disableRoofCheck",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Workbench_workbenchRange",
-        "value": "40"
-      },
-      {
-        "name": "VPCFG_Inventory_enabled",
-        "value": "true"
-      },
-      {
-        "name": "VPCFG_Inventory_woodChestRows",
-        "value": "4"
       },
       {
         "name": "WORLD_BUCKET", 
